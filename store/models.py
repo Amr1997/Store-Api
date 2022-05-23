@@ -1,8 +1,13 @@
+from wsgiref.validate import validator
 from django.contrib import admin
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
 from uuid import uuid4
+
+from store.validators import validate_image_size
+
+
 
 
 class Promotion(models.Model):
@@ -13,7 +18,7 @@ class Promotion(models.Model):
 class Category(models.Model):
     title = models.CharField(max_length=255)
     featured_product = models.ForeignKey(
-        'Product', on_delete=models.SET_NULL, null=True, related_name='+', blank=True)
+        'Product', on_delete=models.SET_NULL , null=True, related_name='+', blank=True)
 
     def __str__(self) -> str:
         return self.title
@@ -24,16 +29,17 @@ class Category(models.Model):
 
 class Product(models.Model):
     title = models.CharField(max_length=255)
-    slug = models.SlugField()
+    slug = models.SlugField(max_length=255, unique=True, default='-')
     description = models.TextField(null=True, blank=True)
     unit_price = models.DecimalField(
         max_digits=6,
         decimal_places=2,
-        validators=[MinValueValidator(1)])
+        validators=[MinValueValidator(1)] ,
+        default=0.00)
     inventory = models.IntegerField(validators=[MinValueValidator(0)])
     last_update = models.DateTimeField(auto_now=True)
     category = models.ForeignKey(
-        Category, on_delete=models.PROTECT, related_name='products')
+        Category, on_delete=models.PROTECT, related_name='products' , null=True)
     promotions = models.ManyToManyField(Promotion, blank=True)
 
     def __str__(self) -> str:
@@ -41,6 +47,11 @@ class Product(models.Model):
 
     class Meta:
         ordering = ['title']
+        
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product , on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='store/products/images' ,
+                              validators=[validate_image_size])
 
 
 class Customer(models.Model):
@@ -58,7 +69,7 @@ class Customer(models.Model):
     membership = models.CharField(
         max_length=1, choices=MEMBERSHIP_CHOICES, default=MEMBERSHIP_BRONZE)
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE , null=True)
 
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'

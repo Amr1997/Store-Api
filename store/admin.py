@@ -19,7 +19,9 @@ class InventoryFilter(admin.SimpleListFilter):
         if self.value() == '<10':
             return queryset.filter(inventory__lt=10)
 
-
+class ProductIMageInline(admin.TabularInline):
+    model = models.ProductImage
+    
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
     autocomplete_fields = ['category']
@@ -27,12 +29,13 @@ class ProductAdmin(admin.ModelAdmin):
         'slug': ['title']
     }
     actions = ['clear_inventory']
+    inlines = [ProductIMageInline]
     list_display = ['title', 'unit_price',
-                    'inventory_status', 'category_title']
+                    'inventory_status', 'category_title' ]
     list_editable = ['unit_price']
     list_filter = ['category', 'last_update', InventoryFilter]
     list_per_page = 10
-    list_select_related = ['category']
+    list_select_related = ['category' ]
     search_fields = ['title']
 
     def category_title(self, product):
