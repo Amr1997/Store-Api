@@ -13,6 +13,7 @@ django-filter = "*"
 djoser = "*"
 djangorestframework-simplejwt = "*"
 pillow = "*"
+whitenoise = "*"
 
 [dev-packages]
 autopep8 = "*"
