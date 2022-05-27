@@ -14,6 +14,7 @@ djoser = "*"
 djangorestframework-simplejwt = "*"
 pillow = "*"
 whitenoise = "*"
+gunicorn = "*"
 
 [dev-packages]
 autopep8 = "*"
