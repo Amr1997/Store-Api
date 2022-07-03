@@ -126,7 +126,7 @@ class Address(models.Model):
 
 
 class Cart(models.Model):
-    id = models.UUIDField(primary_key=True,default=uuid4,unique=True)
+    id = models.UUIDField(primary_key=True,default=uuid4,unique=True , max_length=36)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
